@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IncuBrix — Economics Engine Simulator</title>
+  <style>
+    :root {
+      --blue:    #185FA5;
+      --green:   #0F6E56;
+      --red:     #A32D2D;
+      --yellow:  #92620A;
+      --bg:      #F8F9FA;
+      --card:    #FFFFFF;
+      --border:  #DEE2E6;
+      --text:    #1A1A2E;
+      --muted:   #6C757D;
+      --radius:  8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    header { background: var(--blue); color: #fff; padding: 16px 32px;
+             display: flex; align-items: center; gap: 12px; }
+    header h1 { font-size: 18px; font-weight: 600; }
+    header span { font-size: 12px; opacity: 0.75; background: rgba(255,255,255,.2);
+                  padding: 2px 8px; border-radius: 10px; }
+
+    .layout { display: grid; grid-template-columns: 380px 1fr; gap: 24px;
+              padding: 24px 32px; max-width: 1300px; margin: 0 auto; }
+
+    .card { background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px; }
+    .card h2 { font-size: 14px; font-weight: 600; color: var(--blue);
+               margin-bottom: 16px; text-transform: uppercase; letter-spacing: .04em; }
+
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; font-weight: 500;
+                   color: var(--muted); margin-bottom: 4px; }
+    .field select, .field input {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+      border-radius: 6px; font-size: 13px; background: #fff; color: var(--text);
+    }
+    .field select:focus, .field input:focus {
+      outline: none; border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(24,95,165,.12);
+    }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    button.run-btn {
+      width: 100%; padding: 11px; background: var(--blue); color: #fff;
+      border: none; border-radius: var(--radius); font-size: 14px;
+      font-weight: 600; cursor: pointer; margin-top: 6px; transition: background .15s;
+    }
+    button.run-btn:hover  { background: #1550891; }
+    button.run-btn:active { background: #124680; }
+    button.run-btn:disabled { background: var(--muted); cursor: not-allowed; }
+
+    /* Result panel */
+    .status-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 12px;
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+    }
+    .badge-safe    { background: #E1F5EE; color: var(--green); }
+    .badge-warning { background: #FFF3CD; color: var(--yellow); }
+    .badge-blocked { background: #FCEBEB; color: var(--red); }
+    .badge-completed { background: #E6F1FB; color: var(--blue); }
+
+    .route-card {
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; margin-bottom: 12px; position: relative;
+    }
+    .route-card.recommended { border-color: var(--blue); background: #F0F6FF; }
+    .route-card.blocked-route { border-color: #F5C6CB; background: #FFF5F5; opacity: .7; }
+
+    .route-header { display: flex; justify-content: space-between; align-items: center;
+                    margin-bottom: 8px; }
+    .route-name { font-size: 15px; font-weight: 600; text-transform: capitalize; }
+    .rec-label { font-size: 10px; font-weight: 700; background: var(--blue);
+                 color: #fff; padding: 2px 8px; border-radius: 10px; }
+
+    .cost-row { display: flex; gap: 20px; margin-bottom: 8px; }
+    .cost-item .val { font-size: 18px; font-weight: 600; color: var(--blue); }
+    .cost-item .lbl { font-size: 10px; color: var(--muted); }
+
+    .explanation { font-size: 12px; color: var(--muted); line-height: 1.5;
+                   border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
+
+    .meta-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+    .meta-chip { font-size: 10px; padding: 2px 8px; border-radius: 10px;
+                 background: var(--bg); border: 1px solid var(--border); color: var(--muted); }
+
+    .blocked-msg {
+      background: #FCEBEB; border: 1px solid #F5C6CB; border-radius: var(--radius);
+      padding: 14px 16px; color: var(--red); font-size: 13px; margin-bottom: 16px;
+    }
+
+    .empty-state { text-align: center; padding: 48px; color: var(--muted); font-size: 14px; }
+    .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+
+    #loading { display: none; text-align: center; padding: 32px; }
+    .spinner {
+      width: 28px; height: 28px; border: 3px solid var(--border);
+      border-top-color: var(--blue); border-radius: 50%;
+      animation: spin .8s linear infinite; margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .section-label { font-size: 11px; font-weight: 600; color: var(--muted);
+                     text-transform: uppercase; letter-spacing: .05em;
+                     margin: 16px 0 8px; }
+
+    .api-url { font-size: 11px; background: #F4F6F8; border: 1px solid var(--border);
+               padding: 6px 10px; border-radius: 6px; font-family: monospace;
+               color: var(--muted); margin-bottom: 16px; word-break: break-all; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>IncuBrix — Economics Engine Simulator</h1>
+  </div>
+  <span>Sprint 1 · Simulation Mode</span>
+</header>
+
+<div class="layout">
+
+  <!-- Left: Input Form -->
+  <div>
+    <div class="card">
+      <h2>Job Request</h2>
+
+      <div class="field">
+        <label>Use Case</label>
+        <select id="use_case">
+          <option value="script_to_social_variants">Script → Social Variants</option>
+          <option value="article_to_social">Article → Social</option>
+          <option value="brand_marketing_post_to_promo">Brand Marketing → Promo</option>
+          <option value="blog_product_copy_to_explainer">Blog/Product → Explainer</option>
+          <option value="campaign_variant_generation">Campaign Variant Generation</option>
+          <option value="short_form_social_video">Short-form Social Video</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Duration Class</label>
+          <select id="duration_class">
+            <option value="short">Short (~8s)</option>
+            <option value="medium">Medium (~20s)</option>
+            <option value="long">Long (~45s)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Quality Bar</label>
+          <select id="quality_bar">
+            <option value="acceptable">Acceptable</option>
+            <option value="high" selected>High</option>
+            <option value="premium">Premium</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Latency Mode</label>
+          <select id="latency_mode">
+            <option value="fastest">Fastest</option>
+            <option value="balanced">Balanced</option>
+            <option value="async_ok" selected>Async OK</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Budget Mode</label>
+          <select id="budget_mode">
+            <option value="cheapest">Cheapest</option>
+            <option value="balanced" selected>Balanced</option>
+            <option value="premium">Premium</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Batch Size (number of videos)</label>
+        <input type="number" id="batch_size" value="10" min="1" max="10000" />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Job Budget Cap (USD, optional)</label>
+          <input type="number" id="job_budget_cap" value="25" min="0" step="0.01"
+                 placeholder="e.g. 25.00" />
+        </div>
+        <div class="field">
+          <label>Workspace Cap (USD, optional)</label>
+          <input type="number" id="workspace_budget_cap" value="500" min="0" step="0.01"
+                 placeholder="e.g. 500.00" />
+        </div>
+      </div>
+
+      <button class="run-btn" id="runBtn" onclick="runEstimate()">
+        ▶ Run Estimate
+      </button>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>Quick Presets</h2>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button onclick="loadPreset('cheap')" style="padding:8px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;">
+          💰 Cheapest Route — short, acceptable, async, batch=5
+        </button>
+        <button onclick="loadPreset('budget_breach')" style="padding:8px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;">
+          🚫 Budget Breach — long, premium, batch=20, cap=$5
+        </button>
+        <button onclick="loadPreset('premium')" style="padding:8px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;">
+          ⭐ Premium Quality — medium, premium, fastest, batch=1
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Results -->
+  <div>
+    <div class="card">
+      <h2>Estimation Result</h2>
+      <div class="api-url" id="apiUrl">POST http://localhost:8000/api/video-economics/simulate</div>
+
+      <div id="loading">
+        <div class="spinner"></div>
+        <div style="color:var(--muted);font-size:13px;">Running economics pipeline...</div>
+      </div>
+
+      <div id="results">
+        <div class="empty-state">
+          <div class="icon">📊</div>
+          Fill in the form and click <strong>Run Estimate</strong> to see provider cost comparison.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API_BASE = "http://localhost:8000";
+
+async function runEstimate() {
+  const btn = document.getElementById("runBtn");
+  btn.disabled = true;
+  btn.textContent = "Running...";
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("results").innerHTML = "";
+
+  const jobCap = document.getElementById("job_budget_cap").value;
+  const wsCap  = document.getElementById("workspace_budget_cap").value;
+
+  const payload = {
+    use_case:             document.getElementById("use_case").value,
+    duration_class:       document.getElementById("duration_class").value,
+    quality_bar:          document.getElementById("quality_bar").value,
+    latency_mode:         document.getElementById("latency_mode").value,
+    budget_mode:          document.getElementById("budget_mode").value,
+    batch_size:           parseInt(document.getElementById("batch_size").value),
+    simulation_mode:      true,
+  };
+  if (jobCap) payload.job_budget_cap = parseFloat(jobCap);
+  if (wsCap)  payload.workspace_budget_cap = parseFloat(wsCap);
+
+  try {
+    const resp = await fetch(`${API_BASE}/api/video-economics/simulate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await resp.json();
+    renderResults(data, payload);
+  } catch (err) {
+    document.getElementById("results").innerHTML = `
+      <div class="blocked-msg">
+        ⚠️ Could not connect to the API at <code>${API_BASE}</code>.<br/>
+        Make sure the server is running: <code>uvicorn main:app --reload</code>
+      </div>`;
+  } finally {
+    document.getElementById("loading").style.display = "none";
+    btn.disabled = false;
+    btn.textContent = "▶ Run Estimate";
+  }
+}
+
+function badge(status) {
+  const map = {safe:"badge-safe", warning:"badge-warning", blocked:"badge-blocked", completed:"badge-completed"};
+  return `<span class="status-badge ${map[status] || ''}">${status}</span>`;
+}
+
+function renderResults(data, payload) {
+  let html = "";
+
+  // Request status
+  html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <div style="font-size:12px;color:var(--muted);">Request ID: <code>${data.request_id}</code></div>
+    ${badge(data.request_status)}
+  </div>`;
+
+  // Blocked message
+  if (data.request_status === "blocked" && data.blocked_reason) {
+    html += `<div class="blocked-msg">🚫 <strong>All routes blocked.</strong><br/>${data.blocked_reason}</div>`;
+  }
+
+  // Recommended route
+  if (data.recommended_route) {
+    html += `<div class="section-label">✅ Recommended Route</div>`;
+    html += renderRoute(data.recommended_route, true);
+  }
+
+  // Alternatives
+  if (data.alternatives && data.alternatives.length > 0) {
+    html += `<div class="section-label">Alternative Routes</div>`;
+    data.alternatives.forEach(r => { html += renderRoute(r, false); });
+  }
+
+  // Blocked routes
+  const blocked = (data.all_routes || []).filter(r => r.budget_status === "blocked");
+  if (blocked.length > 0) {
+    html += `<div class="section-label">Blocked Routes (exceed budget cap)</div>`;
+    blocked.forEach(r => { html += renderRoute(r, false, true); });
+  }
+
+  document.getElementById("results").innerHTML = html;
+}
+
+function renderRoute(r, isRec, isBlocked=false) {
+  const cls = isRec ? "route-card recommended" : (isBlocked ? "route-card blocked-route" : "route-card");
+  return `
+    <div class="${cls}">
+      <div class="route-header">
+        <span class="route-name">🔹 ${r.provider}</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${r.is_async_batch ? '<span style="font-size:10px;background:#E1F5EE;color:var(--green);padding:2px 7px;border-radius:10px;">async/batch</span>' : ''}
+          ${badge(r.budget_status)}
+          ${isRec ? '<span class="rec-label">RECOMMENDED</span>' : ''}
+        </div>
+      </div>
+      <div class="cost-row">
+        <div class="cost-item"><div class="val">$${r.estimated_base_cost.toFixed(2)}</div><div class="lbl">Base Est.</div></div>
+        <div class="cost-item"><div class="val" style="color:var(--green)">$${r.estimated_low_cost.toFixed(2)}</div><div class="lbl">Low</div></div>
+        <div class="cost-item"><div class="val" style="color:var(--red)">$${r.estimated_high_cost.toFixed(2)}</div><div class="lbl">High</div></div>
+        ${r.final_score ? `<div class="cost-item"><div class="val" style="color:var(--muted)">${(r.final_score*100).toFixed(0)}</div><div class="lbl">Score</div></div>` : ''}
+      </div>
+      <div class="meta-row">
+        <span class="meta-chip">cost: ${r.cost_class}</span>
+        <span class="meta-chip">confidence: ${r.confidence_class}</span>
+        ${r.async_savings_percent ? `<span class="meta-chip">saves ${r.async_savings_percent}% vs sync</span>` : ''}
+      </div>
+      <div class="explanation">${r.explanation}</div>
+    </div>`;
+}
+
+function loadPreset(name) {
+  const presets = {
+    cheap: {use_case:"article_to_social",duration_class:"short",quality_bar:"acceptable",latency_mode:"async_ok",budget_mode:"cheapest",batch_size:5,job_budget_cap:10,workspace_budget_cap:500},
+    budget_breach: {use_case:"campaign_variant_generation",duration_class:"long",quality_bar:"premium",latency_mode:"async_ok",budget_mode:"cheapest",batch_size:20,job_budget_cap:5,workspace_budget_cap:500},
+    premium: {use_case:"brand_marketing_post_to_promo",duration_class:"medium",quality_bar:"premium",latency_mode:"fastest",budget_mode:"premium",batch_size:1,job_budget_cap:50,workspace_budget_cap:500},
+  };
+  const p = presets[name];
+  if (!p) return;
+  document.getElementById("use_case").value          = p.use_case;
+  document.getElementById("duration_class").value    = p.duration_class;
+  document.getElementById("quality_bar").value       = p.quality_bar;
+  document.getElementById("latency_mode").value      = p.latency_mode;
+  document.getElementById("budget_mode").value       = p.budget_mode;
+  document.getElementById("batch_size").value        = p.batch_size;
+  document.getElementById("job_budget_cap").value    = p.job_budget_cap;
+  document.getElementById("workspace_budget_cap").value = p.workspace_budget_cap;
+}
+</script>
+</body>
+</html>

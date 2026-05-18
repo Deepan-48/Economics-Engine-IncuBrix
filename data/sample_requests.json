@@ -1,0 +1,57 @@
+[
+  {
+    "label": "Social video, async OK, under budget",
+    "use_case": "script_to_social_variants",
+    "duration_class": "short",
+    "quality_bar": "high",
+    "latency_mode": "async_ok",
+    "batch_size": 10,
+    "budget_mode": "balanced",
+    "job_budget_cap": 25.00,
+    "workspace_budget_cap": 500.00,
+    "simulation_mode": true
+  },
+  {
+    "label": "Brand promo, premium quality, sync only",
+    "use_case": "brand_marketing_post_to_promo",
+    "duration_class": "medium",
+    "quality_bar": "premium",
+    "latency_mode": "fastest",
+    "batch_size": 1,
+    "budget_mode": "premium",
+    "job_budget_cap": 50.00,
+    "simulation_mode": true
+  },
+  {
+    "label": "Campaign bulk, will hit budget cap",
+    "use_case": "campaign_variant_generation",
+    "duration_class": "long",
+    "quality_bar": "premium",
+    "latency_mode": "async_ok",
+    "batch_size": 20,
+    "budget_mode": "cheapest",
+    "job_budget_cap": 5.00,
+    "simulation_mode": true
+  },
+  {
+    "label": "Blog explainer, cheapest route",
+    "use_case": "blog_product_copy_to_explainer",
+    "duration_class": "medium",
+    "quality_bar": "acceptable",
+    "latency_mode": "balanced",
+    "batch_size": 3,
+    "budget_mode": "cheapest",
+    "job_budget_cap": 10.00,
+    "simulation_mode": true
+  },
+  {
+    "label": "Article to social, no budget cap",
+    "use_case": "article_to_social",
+    "duration_class": "short",
+    "quality_bar": "acceptable",
+    "latency_mode": "async_ok",
+    "batch_size": 5,
+    "budget_mode": "cheapest",
+    "simulation_mode": true
+  }
+]

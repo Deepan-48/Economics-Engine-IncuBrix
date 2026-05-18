@@ -1,0 +1,135 @@
+[
+  {
+    "provider_key": "openai",
+    "pricing_unit": "per_second",
+    "currency": "USD",
+    "supports_batch_discount": true,
+    "batch_discount_percent": 50,
+    "cost_model_version": 1,
+    "base_assumptions": {
+      "short_seconds": 8,
+      "medium_seconds": 20,
+      "long_seconds": 45
+    },
+    "rate_per_second": 0.030,
+    "uncertainty_multiplier": {
+      "low": 0.9,
+      "high": 1.2
+    },
+    "quality_multiplier": {
+      "acceptable": 0.8,
+      "high": 1.0,
+      "premium": 1.35
+    },
+    "is_active": true,
+    "notes": "OpenAI video gen per-second pricing with 50% Batch API discount for async_ok jobs"
+  },
+  {
+    "provider_key": "runway",
+    "pricing_unit": "credits",
+    "currency": "USD",
+    "supports_batch_discount": false,
+    "batch_discount_percent": 0,
+    "cost_model_version": 1,
+    "credit_price_usd": 0.01,
+    "base_assumptions": {
+      "short_credits": 50,
+      "medium_credits": 120,
+      "long_credits": 250
+    },
+    "uncertainty_multiplier": {
+      "low": 0.9,
+      "high": 1.3
+    },
+    "quality_multiplier": {
+      "acceptable": 0.85,
+      "high": 1.0,
+      "premium": 1.4
+    },
+    "is_active": true,
+    "notes": "Runway Gen-3 credit-based pricing. Credits purchased at $0.01 each."
+  },
+  {
+    "provider_key": "fal",
+    "pricing_unit": "flat",
+    "currency": "USD",
+    "supports_batch_discount": false,
+    "batch_discount_percent": 0,
+    "cost_model_version": 1,
+    "model_pricing": {
+      "acceptable": 0.045,
+      "high": 0.080,
+      "premium": 0.150
+    },
+    "base_assumptions": {
+      "short_multiplier": 1.0,
+      "medium_multiplier": 2.2,
+      "long_multiplier": 4.5
+    },
+    "uncertainty_multiplier": {
+      "low": 0.85,
+      "high": 1.25
+    },
+    "is_active": true,
+    "notes": "fal.ai model-level flat pricing per generation, scaled by duration class"
+  },
+  {
+    "provider_key": "replicate",
+    "pricing_unit": "runtime",
+    "currency": "USD",
+    "supports_batch_discount": false,
+    "batch_discount_percent": 0,
+    "cost_model_version": 1,
+    "hardware_profiles": {
+      "standard": { "rate_per_second": 0.0014 },
+      "gpu_large": { "rate_per_second": 0.0055 },
+      "gpu_xl":    { "rate_per_second": 0.0115 }
+    },
+    "duration_class_hardware": {
+      "short":  "standard",
+      "medium": "gpu_large",
+      "long":   "gpu_xl"
+    },
+    "base_assumptions": {
+      "short_seconds": 12,
+      "medium_seconds": 30,
+      "long_seconds": 70
+    },
+    "uncertainty_multiplier": {
+      "low": 0.8,
+      "high": 1.4
+    },
+    "is_active": true,
+    "notes": "Replicate charges runtime x hardware rate. Longer videos use bigger GPUs."
+  },
+  {
+    "provider_key": "piapi",
+    "pricing_unit": "credits_account_mode",
+    "currency": "USD",
+    "supports_batch_discount": false,
+    "batch_discount_percent": 0,
+    "cost_model_version": 1,
+    "account_mode": "pay_as_you_go",
+    "credit_price_usd": 0.008,
+    "account_mode_multiplier": {
+      "pay_as_you_go": 1.0,
+      "host_your_account": 0.65
+    },
+    "base_assumptions": {
+      "short_credits": 40,
+      "medium_credits": 95,
+      "long_credits": 200
+    },
+    "uncertainty_multiplier": {
+      "low": 0.88,
+      "high": 1.28
+    },
+    "quality_multiplier": {
+      "acceptable": 0.9,
+      "high": 1.0,
+      "premium": 1.3
+    },
+    "is_active": true,
+    "notes": "PiAPI credit model. host-your-account mode gives 35% discount."
+  }
+]

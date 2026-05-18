@@ -1,0 +1,265 @@
+{
+  "sample_estimation_requests": [
+    {
+      "id": 1, "label": "Short social async cheapest",
+      "use_case": "script_to_social_variants", "duration_class": "short",
+      "quality_bar": "acceptable", "latency_mode": "async_ok",
+      "batch_size": 5, "budget_mode": "cheapest",
+      "job_budget_cap": 10.0, "simulation_mode": true
+    },
+    {
+      "id": 2, "label": "Short social sync balanced",
+      "use_case": "article_to_social", "duration_class": "short",
+      "quality_bar": "high", "latency_mode": "balanced",
+      "batch_size": 3, "budget_mode": "balanced",
+      "job_budget_cap": 20.0, "simulation_mode": true
+    },
+    {
+      "id": 3, "label": "Medium brand promo premium",
+      "use_case": "brand_marketing_post_to_promo", "duration_class": "medium",
+      "quality_bar": "premium", "latency_mode": "fastest",
+      "batch_size": 1, "budget_mode": "premium",
+      "job_budget_cap": 50.0, "simulation_mode": true
+    },
+    {
+      "id": 4, "label": "Blog explainer medium acceptable",
+      "use_case": "blog_product_copy_to_explainer", "duration_class": "medium",
+      "quality_bar": "acceptable", "latency_mode": "async_ok",
+      "batch_size": 2, "budget_mode": "cheapest",
+      "job_budget_cap": 8.0, "simulation_mode": true
+    },
+    {
+      "id": 5, "label": "Long campaign async high quality",
+      "use_case": "campaign_variant_generation", "duration_class": "long",
+      "quality_bar": "high", "latency_mode": "async_ok",
+      "batch_size": 10, "budget_mode": "balanced",
+      "job_budget_cap": 100.0, "simulation_mode": true
+    },
+    {
+      "id": 6, "label": "Short social no cap",
+      "use_case": "short_form_social_video", "duration_class": "short",
+      "quality_bar": "acceptable", "latency_mode": "async_ok",
+      "batch_size": 20, "budget_mode": "cheapest",
+      "simulation_mode": true
+    },
+    {
+      "id": 7, "label": "Medium explainer high quality sync",
+      "use_case": "blog_product_copy_to_explainer", "duration_class": "medium",
+      "quality_bar": "high", "latency_mode": "fastest",
+      "batch_size": 1, "budget_mode": "balanced",
+      "job_budget_cap": 30.0, "simulation_mode": true
+    },
+    {
+      "id": 8, "label": "Short script variants batch 15",
+      "use_case": "script_to_social_variants", "duration_class": "short",
+      "quality_bar": "high", "latency_mode": "async_ok",
+      "batch_size": 15, "budget_mode": "balanced",
+      "job_budget_cap": 40.0, "simulation_mode": true
+    },
+    {
+      "id": 9, "label": "Long form premium sync",
+      "use_case": "brand_marketing_post_to_promo", "duration_class": "long",
+      "quality_bar": "premium", "latency_mode": "fastest",
+      "batch_size": 1, "budget_mode": "premium",
+      "job_budget_cap": 200.0, "simulation_mode": true
+    },
+    {
+      "id": 10, "label": "Article to social bulk campaign",
+      "use_case": "article_to_social", "duration_class": "short",
+      "quality_bar": "acceptable", "latency_mode": "async_ok",
+      "batch_size": 50, "budget_mode": "cheapest",
+      "job_budget_cap": 50.0, "simulation_mode": true
+    },
+    {
+      "id": 11, "label": "Medium balanced no workspace cap",
+      "use_case": "campaign_variant_generation", "duration_class": "medium",
+      "quality_bar": "high", "latency_mode": "balanced",
+      "batch_size": 5, "budget_mode": "balanced",
+      "job_budget_cap": 60.0, "workspace_budget_cap": 500.0,
+      "simulation_mode": true
+    },
+    {
+      "id": 12, "label": "Short acceptable fastest small batch",
+      "use_case": "short_form_social_video", "duration_class": "short",
+      "quality_bar": "acceptable", "latency_mode": "fastest",
+      "batch_size": 2, "budget_mode": "cheapest",
+      "job_budget_cap": 5.0, "simulation_mode": true
+    },
+    {
+      "id": 13, "label": "Margin simulation with markup",
+      "use_case": "script_to_social_variants", "duration_class": "short",
+      "quality_bar": "high", "latency_mode": "async_ok",
+      "batch_size": 10, "budget_mode": "balanced",
+      "job_budget_cap": 25.0, "price_to_customer": 60.0,
+      "markup_mode": "markup", "simulation_mode": true
+    },
+    {
+      "id": 14, "label": "Protected margin pass",
+      "use_case": "brand_marketing_post_to_promo", "duration_class": "medium",
+      "quality_bar": "high", "latency_mode": "balanced",
+      "batch_size": 1, "budget_mode": "balanced",
+      "job_budget_cap": 50.0, "price_to_customer": 100.0,
+      "markup_mode": "protected_margin", "target_margin_percent": 40.0,
+      "simulation_mode": true
+    },
+    {
+      "id": 15, "label": "Pass through pricing",
+      "use_case": "article_to_social", "duration_class": "short",
+      "quality_bar": "acceptable", "latency_mode": "async_ok",
+      "batch_size": 3, "budget_mode": "cheapest",
+      "job_budget_cap": 10.0, "price_to_customer": 5.0,
+      "markup_mode": "pass_through", "simulation_mode": true
+    },
+    {
+      "id": 16, "label": "Long async bulk acceptable",
+      "use_case": "campaign_variant_generation", "duration_class": "long",
+      "quality_bar": "acceptable", "latency_mode": "async_ok",
+      "batch_size": 8, "budget_mode": "cheapest",
+      "job_budget_cap": 80.0, "simulation_mode": true
+    },
+    {
+      "id": 17, "label": "Medium premium async campaign",
+      "use_case": "campaign_variant_generation", "duration_class": "medium",
+      "quality_bar": "premium", "latency_mode": "async_ok",
+      "batch_size": 4, "budget_mode": "premium",
+      "job_budget_cap": 150.0, "simulation_mode": true
+    },
+    {
+      "id": 18, "label": "Short high balanced single",
+      "use_case": "short_form_social_video", "duration_class": "short",
+      "quality_bar": "high", "latency_mode": "balanced",
+      "batch_size": 1, "budget_mode": "balanced",
+      "job_budget_cap": 5.0, "simulation_mode": true
+    },
+    {
+      "id": 19, "label": "Blog long acceptable async",
+      "use_case": "blog_product_copy_to_explainer", "duration_class": "long",
+      "quality_bar": "acceptable", "latency_mode": "async_ok",
+      "batch_size": 3, "budget_mode": "cheapest",
+      "job_budget_cap": 30.0, "simulation_mode": true
+    },
+    {
+      "id": 20, "label": "Premium protected margin fail",
+      "use_case": "brand_marketing_post_to_promo", "duration_class": "long",
+      "quality_bar": "premium", "latency_mode": "fastest",
+      "batch_size": 1, "budget_mode": "premium",
+      "job_budget_cap": 200.0, "price_to_customer": 20.0,
+      "markup_mode": "protected_margin", "target_margin_percent": 60.0,
+      "simulation_mode": true
+    }
+  ],
+
+  "budget_block_scenarios": [
+    { "id": "bb1", "label": "Tiny cap blocks everything",
+      "use_case": "campaign_variant_generation", "duration_class": "long",
+      "quality_bar": "premium", "latency_mode": "async_ok",
+      "batch_size": 20, "budget_mode": "cheapest",
+      "job_budget_cap": 0.5, "simulation_mode": true },
+    { "id": "bb2", "label": "Short batch over tiny cap",
+      "use_case": "article_to_social", "duration_class": "short",
+      "quality_bar": "high", "latency_mode": "fastest",
+      "batch_size": 100, "budget_mode": "balanced",
+      "job_budget_cap": 1.0, "simulation_mode": true },
+    { "id": "bb3", "label": "Premium long over cap",
+      "use_case": "brand_marketing_post_to_promo", "duration_class": "long",
+      "quality_bar": "premium", "latency_mode": "fastest",
+      "batch_size": 5, "budget_mode": "premium",
+      "job_budget_cap": 2.0, "simulation_mode": true },
+    { "id": "bb4", "label": "Medium high quality over small cap",
+      "use_case": "blog_product_copy_to_explainer", "duration_class": "medium",
+      "quality_bar": "high", "latency_mode": "balanced",
+      "batch_size": 10, "budget_mode": "balanced",
+      "job_budget_cap": 3.0, "simulation_mode": true },
+    { "id": "bb5", "label": "Near cap warning zone",
+      "use_case": "script_to_social_variants", "duration_class": "short",
+      "quality_bar": "high", "latency_mode": "async_ok",
+      "batch_size": 10, "budget_mode": "balanced",
+      "job_budget_cap": 4.5, "simulation_mode": true },
+    { "id": "bb6", "label": "Long acceptable over $1 cap",
+      "use_case": "campaign_variant_generation", "duration_class": "long",
+      "quality_bar": "acceptable", "latency_mode": "async_ok",
+      "batch_size": 3, "budget_mode": "cheapest",
+      "job_budget_cap": 1.0, "simulation_mode": true },
+    { "id": "bb7", "label": "Workspace cap too low",
+      "use_case": "article_to_social", "duration_class": "medium",
+      "quality_bar": "premium", "latency_mode": "balanced",
+      "batch_size": 5, "budget_mode": "premium",
+      "job_budget_cap": 50.0, "workspace_budget_cap": 1.0,
+      "simulation_mode": true },
+    { "id": "bb8", "label": "Zero cap",
+      "use_case": "short_form_social_video", "duration_class": "short",
+      "quality_bar": "acceptable", "latency_mode": "async_ok",
+      "batch_size": 1, "budget_mode": "cheapest",
+      "job_budget_cap": 0.01, "simulation_mode": true },
+    { "id": "bb9", "label": "Premium margin blocked",
+      "use_case": "brand_marketing_post_to_promo", "duration_class": "long",
+      "quality_bar": "premium", "latency_mode": "fastest",
+      "batch_size": 1, "budget_mode": "premium",
+      "job_budget_cap": 500.0, "price_to_customer": 10.0,
+      "markup_mode": "protected_margin", "target_margin_percent": 80.0,
+      "simulation_mode": true },
+    { "id": "bb10", "label": "Large batch over cap",
+      "use_case": "campaign_variant_generation", "duration_class": "medium",
+      "quality_bar": "high", "latency_mode": "balanced",
+      "batch_size": 50, "budget_mode": "balanced",
+      "job_budget_cap": 5.0, "simulation_mode": true }
+  ],
+
+  "async_vs_sync_scenarios": [
+    { "id": "as1", "label": "Async saves >50% OpenAI",
+      "use_case": "script_to_social_variants", "duration_class": "short",
+      "quality_bar": "high", "latency_mode": "async_ok",
+      "batch_size": 10, "budget_mode": "cheapest", "simulation_mode": true },
+    { "id": "as2", "label": "Fastest forces sync",
+      "use_case": "script_to_social_variants", "duration_class": "short",
+      "quality_bar": "high", "latency_mode": "fastest",
+      "batch_size": 10, "budget_mode": "cheapest", "simulation_mode": true },
+    { "id": "as3", "label": "Balanced mode comparison",
+      "use_case": "article_to_social", "duration_class": "medium",
+      "quality_bar": "acceptable", "latency_mode": "balanced",
+      "batch_size": 5, "budget_mode": "cheapest", "simulation_mode": true },
+    { "id": "as4", "label": "Long video async savings",
+      "use_case": "campaign_variant_generation", "duration_class": "long",
+      "quality_bar": "high", "latency_mode": "async_ok",
+      "batch_size": 3, "budget_mode": "cheapest", "simulation_mode": true },
+    { "id": "as5", "label": "Premium quality async",
+      "use_case": "brand_marketing_post_to_promo", "duration_class": "medium",
+      "quality_bar": "premium", "latency_mode": "async_ok",
+      "batch_size": 2, "budget_mode": "premium", "simulation_mode": true },
+    { "id": "as6", "label": "Large batch async",
+      "use_case": "campaign_variant_generation", "duration_class": "short",
+      "quality_bar": "acceptable", "latency_mode": "async_ok",
+      "batch_size": 100, "budget_mode": "cheapest", "simulation_mode": true },
+    { "id": "as7", "label": "Large batch sync comparison",
+      "use_case": "campaign_variant_generation", "duration_class": "short",
+      "quality_bar": "acceptable", "latency_mode": "fastest",
+      "batch_size": 100, "budget_mode": "cheapest", "simulation_mode": true },
+    { "id": "as8", "label": "Medium async with cap",
+      "use_case": "blog_product_copy_to_explainer", "duration_class": "medium",
+      "quality_bar": "high", "latency_mode": "async_ok",
+      "batch_size": 5, "budget_mode": "balanced",
+      "job_budget_cap": 50.0, "simulation_mode": true },
+    { "id": "as9", "label": "Single video async vs sync",
+      "use_case": "short_form_social_video", "duration_class": "short",
+      "quality_bar": "high", "latency_mode": "async_ok",
+      "batch_size": 1, "budget_mode": "cheapest", "simulation_mode": true },
+    { "id": "as10", "label": "Long async vs sync premium",
+      "use_case": "brand_marketing_post_to_promo", "duration_class": "long",
+      "quality_bar": "premium", "latency_mode": "async_ok",
+      "batch_size": 1, "budget_mode": "premium",
+      "job_budget_cap": 300.0, "simulation_mode": true }
+  ],
+
+  "override_scenarios": [
+    { "id": "ov1", "label": "BD team prefers Runway",
+      "override_provider": "runway", "override_reason": "BD team has existing Runway contract" },
+    { "id": "ov2", "label": "Engineering prefers fal",
+      "override_provider": "fal", "override_reason": "Engineering team familiar with fal API" },
+    { "id": "ov3", "label": "Finance forces cheapest",
+      "override_provider": "piapi", "override_reason": "Finance approval required for this provider" },
+    { "id": "ov4", "label": "Quality requirement",
+      "override_provider": "openai", "override_reason": "OpenAI required for premium quality SLA" },
+    { "id": "ov5", "label": "Override no reason given",
+      "override_provider": "replicate", "override_reason": null }
+  ]
+}

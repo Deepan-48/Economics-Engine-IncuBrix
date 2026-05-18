@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IncuBrix — Admin Console</title>
+  <style>
+    :root {
+      --blue: #185FA5; --green: #0F6E56; --red: #A32D2D;
+      --bg: #F8F9FA; --card: #fff; --border: #DEE2E6;
+      --text: #1A1A2E; --muted: #6C757D; --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); }
+    header { background: var(--blue); color: #fff; padding: 14px 28px;
+             display: flex; align-items: center; justify-content: space-between; }
+    header h1 { font-size: 17px; font-weight: 600; }
+    header a  { color: rgba(255,255,255,.8); font-size: 12px; text-decoration: none; }
+    header a:hover { color: #fff; }
+
+    .tabs { display: flex; gap: 2px; background: var(--border);
+            padding: 2px; border-radius: var(--radius); margin: 20px 28px 0; width: fit-content; }
+    .tab { padding: 8px 18px; border-radius: 6px; font-size: 13px; cursor: pointer;
+           border: none; background: transparent; color: var(--muted); }
+    .tab.active { background: #fff; color: var(--blue); font-weight: 500; }
+
+    .section { display: none; padding: 20px 28px; }
+    .section.active { display: block; }
+
+    .card { background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 18px; margin-bottom: 16px; }
+    .card h2 { font-size: 13px; font-weight: 600; color: var(--blue);
+               text-transform: uppercase; letter-spacing: .04em; margin-bottom: 14px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 8px 10px; background: var(--blue);
+         color: #fff; font-weight: 500; font-size: 12px; }
+    td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #F8F9FA; }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px;
+             font-size: 11px; font-weight: 500; }
+    .badge.active  { background: #E1F5EE; color: var(--green); }
+    .badge.inactive { background: #FCEBEB; color: var(--red); }
+
+    btn, button.btn {
+      padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500;
+      cursor: pointer; border: 1px solid var(--border); background: #fff;
+      color: var(--text); transition: all .15s;
+    }
+    button.btn:hover { border-color: var(--blue); color: var(--blue); }
+    button.btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+    button.btn.primary:hover { background: #145490; }
+    button.btn.danger  { background: var(--red); color: #fff; border-color: var(--red); }
+
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 12px; font-weight: 500;
+                   color: var(--muted); margin-bottom: 4px; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+      border-radius: 6px; font-size: 13px; font-family: inherit;
+    }
+    .field textarea { min-height: 80px; font-family: monospace; font-size: 12px; }
+    .field input:focus, .field textarea:focus {
+      outline: none; border-color: var(--blue);
+    }
+
+    .msg { padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-top: 10px; }
+    .msg.ok  { background: #E1F5EE; color: var(--green); }
+    .msg.err { background: #FCEBEB; color: var(--red); }
+
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .actions { display: flex; gap: 6px; }
+
+    .event-row { display: flex; gap: 10px; align-items: flex-start;
+                 padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .event-row:last-child { border-bottom: none; }
+    .event-type { font-weight: 500; color: var(--blue); min-width: 260px; }
+    .event-time { color: var(--muted); min-width: 160px; }
+    .event-props { color: var(--muted); font-family: monospace; font-size: 11px; }
+
+    #analyticsFilter { margin-bottom: 12px; display: flex; gap: 8px; align-items: center; }
+    #analyticsFilter select { padding: 6px 10px; border: 1px solid var(--border);
+                               border-radius: 6px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>IncuBrix — Admin Console</h1>
+  <div style="display:flex;gap:16px;">
+    <a href="/docs" target="_blank">API Docs ↗</a>
+    <a href="simulation_ui.html">Simulation UI ↗</a>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('providers')">Providers</button>
+  <button class="tab" onclick="switchTab('thresholds')">Thresholds</button>
+  <button class="tab" onclick="switchTab('analytics')">Analytics</button>
+</div>
+
+<!-- PROVIDERS TAB -->
+<div id="tab-providers" class="section active">
+  <div class="card">
+    <h2>Provider Pricing Profiles</h2>
+    <table id="providerTable">
+      <thead><tr><th>Provider</th><th>Pricing Unit</th><th>Version</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="providerBody"><tr><td colspan="5" style="color:var(--muted)">Loading...</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Edit Provider Profile</h2>
+    <div class="grid2">
+      <div>
+        <div class="field">
+          <label>Provider</label>
+          <select id="editProvider">
+            <option value="">Select provider...</option>
+            <option value="openai">openai</option>
+            <option value="runway">runway</option>
+            <option value="fal">fal</option>
+            <option value="replicate">replicate</option>
+            <option value="piapi">piapi</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Changes (JSON — only fields you want to update)</label>
+          <textarea id="editJson" placeholder='e.g. {"rate_per_second": 0.025}'></textarea>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn primary" onclick="updateProvider()">Save New Version</button>
+          <button class="btn" onclick="rollbackProvider()">Rollback to Previous</button>
+        </div>
+        <div id="editMsg"></div>
+      </div>
+      <div>
+        <div class="card" style="background:#F8F9FA;">
+          <h2>How Versioning Works</h2>
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;">
+            Every save creates a new version. The previous version is kept but deactivated.
+            Rollback restores the previous version instantly.<br/><br/>
+            Only the active version is used for cost estimation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- THRESHOLDS TAB -->
+<div id="tab-thresholds" class="section">
+  <div class="card" style="max-width:480px;">
+    <h2>Policy Thresholds</h2>
+    <div class="field">
+      <label>Near-Budget Warning Threshold (0.0 – 1.0)</label>
+      <input type="number" id="nearBudget" step="0.01" min="0" max="1" placeholder="e.g. 0.85"/>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">
+        Routes where estimated_high_cost >= this % of cap get a warning status.
+        Default: 0.85 (85%)
+      </div>
+    </div>
+    <div class="field">
+      <label>Async Savings Threshold (0.0 – 1.0)</label>
+      <input type="number" id="asyncSavings" step="0.01" min="0" max="1" placeholder="e.g. 0.15"/>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">
+        Async route gets recommended flag when it saves more than this % vs sync.
+        Default: 0.15 (15%)
+      </div>
+    </div>
+    <button class="btn primary" onclick="saveThresholds()">Save Thresholds</button>
+    <div id="thresholdMsg"></div>
+  </div>
+</div>
+
+<!-- ANALYTICS TAB -->
+<div id="tab-analytics" class="section">
+  <div class="card">
+    <h2>Recent Events</h2>
+    <div id="analyticsFilter">
+      <select id="eventTypeFilter" onchange="loadAnalytics()">
+        <option value="">All event types</option>
+        <option value="economics_estimate_created">estimate_created</option>
+        <option value="economics_budget_blocked">budget_blocked</option>
+        <option value="economics_async_savings_recommended">async_savings_recommended</option>
+        <option value="economics_override_submitted">override_submitted</option>
+      </select>
+      <button class="btn" onclick="loadAnalytics()">Refresh</button>
+    </div>
+    <div id="analyticsBody"><div style="color:var(--muted);font-size:13px;">Loading...</div></div>
+  </div>
+</div>
+
+<script>
+const API = "http://localhost:8000/api/video-economics";
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const names = ['providers', 'thresholds', 'analytics'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  if (name === 'providers') loadProviders();
+  if (name === 'thresholds') loadThresholds();
+  if (name === 'analytics') loadAnalytics();
+}
+
+async function api(path, method = 'GET', body = null) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(`${API}${path}`, opts);
+    return await r.json();
+  } catch {
+    return null;
+  }
+}
+
+async function loadProviders() {
+  const data = await api('/admin/providers');
+  if (!data) { document.getElementById('providerBody').innerHTML =
+    '<tr><td colspan="5" style="color:var(--red)">Could not connect to API.</td></tr>'; return; }
+
+  document.getElementById('providerBody').innerHTML = data.providers.map(p => `
+    <tr>
+      <td><strong>${p.provider_key}</strong></td>
+      <td style="color:var(--muted)">${p.provider_key === 'openai' ? 'per_second' :
+          p.provider_key === 'runway' ? 'credits' : p.provider_key === 'fal' ? 'flat' :
+          p.provider_key === 'replicate' ? 'runtime' : 'credits_account_mode'}</td>
+      <td>v${p.version}</td>
+      <td><span class="badge ${p.is_active ? 'active' : 'inactive'}">${p.is_active ? 'Active' : 'Inactive'}</span></td>
+      <td class="actions">
+        <button class="btn" onclick="toggleProvider('${p.provider_key}')">
+          ${p.is_active ? 'Deactivate' : 'Activate'}
+        </button>
+      </td>
+    </tr>`).join('');
+}
+
+async function toggleProvider(key) {
+  await api(`/admin/providers/${key}/toggle`, 'POST');
+  loadProviders();
+}
+
+async function updateProvider() {
+  const key = document.getElementById('editProvider').value;
+  const raw = document.getElementById('editJson').value;
+  const msg = document.getElementById('editMsg');
+  if (!key) { msg.className = 'msg err'; msg.textContent = 'Select a provider first.'; return; }
+  let json;
+  try { json = JSON.parse(raw); } catch {
+    msg.className = 'msg err'; msg.textContent = 'Invalid JSON.'; return;
+  }
+  const result = await api(`/admin/providers/${key}`, 'PATCH', { pricing_profile_json: json });
+  if (result && result.new_version) {
+    msg.className = 'msg ok';
+    msg.textContent = `Saved. New version: v${result.new_version}.`;
+    loadProviders();
+  } else {
+    msg.className = 'msg err';
+    msg.textContent = result?.detail || 'Update failed.';
+  }
+}
+
+async function rollbackProvider() {
+  const key = document.getElementById('editProvider').value;
+  const msg = document.getElementById('editMsg');
+  if (!key) { msg.className = 'msg err'; msg.textContent = 'Select a provider first.'; return; }
+  const result = await api(`/admin/providers/${key}/rollback`, 'POST');
+  if (result && result.rolled_back_to) {
+    msg.className = 'msg ok';
+    msg.textContent = `Rolled back to v${result.rolled_back_to}.`;
+    loadProviders();
+  } else {
+    msg.className = 'msg err';
+    msg.textContent = result?.detail || 'Rollback failed.';
+  }
+}
+
+async function loadThresholds() {
+  const data = await api('/admin/thresholds');
+  if (!data) return;
+  document.getElementById('nearBudget').value = data.near_budget_threshold;
+  document.getElementById('asyncSavings').value = data.async_savings_threshold;
+}
+
+async function saveThresholds() {
+  const msg = document.getElementById('thresholdMsg');
+  const payload = {
+    near_budget_threshold: parseFloat(document.getElementById('nearBudget').value),
+    async_savings_threshold: parseFloat(document.getElementById('asyncSavings').value),
+  };
+  const result = await api('/admin/thresholds', 'PATCH', payload);
+  if (result && result.updated) {
+    msg.className = 'msg ok';
+    msg.textContent = 'Thresholds saved.';
+  } else {
+    msg.className = 'msg err';
+    msg.textContent = 'Save failed.';
+  }
+}
+
+async function loadAnalytics() {
+  const filter = document.getElementById('eventTypeFilter').value;
+  const url = filter ? `/admin/analytics?event_type=${filter}&limit=50` : '/admin/analytics?limit=50';
+  const data = await api(url);
+  const el = document.getElementById('analyticsBody');
+  if (!data || !data.events) { el.innerHTML = '<div style="color:var(--red);font-size:13px;">Could not load events.</div>'; return; }
+  if (data.events.length === 0) { el.innerHTML = '<div style="color:var(--muted);font-size:13px;">No events yet. Run an estimate first.</div>'; return; }
+
+  el.innerHTML = data.events.map(e => `
+    <div class="event-row">
+      <div class="event-type">${e.event_type}</div>
+      <div class="event-time">${new Date(e.created_at).toLocaleString()}</div>
+      <div style="color:var(--muted);font-size:11px;font-family:monospace;">
+        req: ${e.request_id?.slice(0,8)}...
+        &nbsp;|&nbsp;
+        ${JSON.stringify(e.properties || {}).slice(0, 120)}
+      </div>
+    </div>`).join('');
+}
+
+// load providers on start
+loadProviders();
+</script>
+</body>
+</html>
