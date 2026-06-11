@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IncuBrix — Admin Console v2</title>
+  <style>
+    :root{--blue:#185FA5;--green:#0F6E56;--red:#A32D2D;--yellow:#92620A;--bg:#F8F9FA;--card:#fff;--border:#DEE2E6;--text:#1A1A2E;--muted:#6C757D;--radius:8px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
+    header{background:var(--blue);color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+    header h1{font-size:17px;font-weight:600}
+    header a{color:rgba(255,255,255,.8);font-size:12px;text-decoration:none;margin-left:16px}
+    .tabs{display:flex;gap:2px;background:var(--border);padding:2px;border-radius:var(--radius);margin:18px 28px 0;width:fit-content}
+    .tab{padding:8px 18px;border-radius:6px;font-size:13px;cursor:pointer;border:none;background:transparent;color:var(--muted)}
+    .tab.active{background:#fff;color:var(--blue);font-weight:500}
+    .section{display:none;padding:18px 28px}
+    .section.active{display:block}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+    .card h2{font-size:13px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{text-align:left;padding:8px 10px;background:var(--blue);color:#fff;font-weight:500;font-size:12px}
+    td{padding:8px 10px;border-bottom:1px solid var(--border)}
+    tr:nth-child(even) td{background:#F8F9FA}
+    .btn{padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--text)}
+    .btn:hover{border-color:var(--blue);color:var(--blue)}
+    .btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .btn.danger{background:var(--red);color:#fff;border-color:var(--red)}
+    .field{margin-bottom:12px}
+    .field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:4px}
+    .field input,.field select,.field textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit}
+    .field textarea{min-height:100px;font-family:monospace;font-size:12px}
+    .msg{padding:10px 14px;border-radius:6px;font-size:13px;margin-top:10px}
+    .msg.ok{background:#E1F5EE;color:var(--green)}
+    .msg.err{background:#FCEBEB;color:var(--red)}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .kv{background:#F4F6F8;border:1px solid var(--border);padding:12px 14px;border-radius:6px;font-family:monospace;font-size:12px;white-space:pre-wrap;overflow:auto;max-height:320px}
+    .event-row{padding:9px 0;border-bottom:1px solid var(--border);display:flex;gap:12px;font-size:12px}
+    .event-type{font-weight:500;color:var(--blue);min-width:300px}
+    .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
+    .active-b{background:#E1F5EE;color:var(--green)}
+    .inactive-b{background:#FCEBEB;color:var(--red)}
+    .staged-b{background:#FFF3CD;color:var(--yellow)}
+    .alert-card{padding:10px 0;border-bottom:1px solid var(--border)}
+    .alert-title{font-weight:500;font-size:13px;margin-bottom:3px}
+    .alert-desc{font-size:12px;color:var(--muted)}
+    .sev-high{color:var(--red)}
+    .sev-critical{color:var(--red);font-weight:700}
+    .sev-medium{color:var(--yellow)}
+    .sev-low{color:var(--muted)}
+  </style>
+</head>
+<body>
+<header>
+  <h1>IncuBrix — Admin Console v2</h1>
+  <div>
+    <a href="simulation_ui.html">Simulation UI</a>
+    <a href="/docs" target="_blank">API Docs ↗</a>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('providers')">Providers</button>
+  <button class="tab" onclick="switchTab('thresholds')">Thresholds</button>
+  <button class="tab" onclick="switchTab('ledger')">Ledger</button>
+  <button class="tab" onclick="switchTab('actuals')">Actuals</button>
+  <button class="tab" onclick="switchTab('analytics')">Analytics</button>
+  <button class="tab" onclick="switchTab('forecast')">Forecast</button>
+</div>
+
+<!-- PROVIDERS -->
+<div id="tab-providers" class="section active">
+  <div class="card">
+    <h2>Active Provider Profiles (v2)</h2>
+    <table>
+      <thead><tr><th>Provider</th><th>Model</th><th>Version</th><th>Status</th><th>Source</th><th>Actions</th></tr></thead>
+      <tbody id="providerBody"><tr><td colspan="6" style="color:var(--muted)">Loading...</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Manage Profile Version</h2>
+    <div class="grid2">
+      <div>
+        <div class="field">
+          <label>Provider</label>
+          <select id="stageProvider">
+            <option value="">Select...</option>
+            <option value="openai">openai</option>
+            <option value="runway">runway</option>
+            <option value="fal">fal</option>
+            <option value="replicate">replicate</option>
+            <option value="piapi">piapi</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Profile JSON (fields to update)</label>
+          <textarea id="stageJson" placeholder='{"rate_cards":[{"model_key":"default","unit_type":"per_second","unit_rate":0.025,"quality_class":"high","currency":"USD"}]}'></textarea>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn primary" onclick="stageProfile()">Stage New Version</button>
+          <button class="btn" onclick="validateProfile()">Validate</button>
+          <button class="btn danger" onclick="rollbackProfile()">Rollback</button>
+        </div>
+        <div id="stageMsg"></div>
+      </div>
+      <div>
+        <div class="field">
+          <label>Approve Version Number</label>
+          <input type="number" id="approveVersion" placeholder="e.g. 2" min="1"/>
+        </div>
+        <button class="btn primary" onclick="approveProfile()">Approve & Activate</button>
+        <div id="approveMsg"></div>
+        <div id="impactPreview" style="display:none;margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- THRESHOLDS -->
+<div id="tab-thresholds" class="section">
+  <div class="card" style="max-width:480px">
+    <h2>Policy Thresholds</h2>
+    <div class="field">
+      <label>Near-Budget Warning Threshold (0.0 – 1.0)</label>
+      <input type="number" id="nearBudget" step="0.01" min="0" max="1" placeholder="default: 0.85"/>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">Routes where high cost >= this % of cap get a warning.</div>
+    </div>
+    <div class="field">
+      <label>Async Savings Threshold (0.0 – 1.0)</label>
+      <input type="number" id="asyncSavings" step="0.01" min="0" max="1" placeholder="default: 0.15"/>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">Async recommended when savings exceed this %.</div>
+    </div>
+    <button class="btn primary" onclick="saveThresholds()">Save Thresholds</button>
+    <div id="thresholdMsg"></div>
+  </div>
+</div>
+
+<!-- LEDGER -->
+<div id="tab-ledger" class="section">
+  <div class="card">
+    <h2>Ledger Summary</h2>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <input id="ledgerWs" placeholder="workspace_id (optional)" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;width:220px"/>
+      <button class="btn primary" onclick="loadLedger()">Load Summary</button>
+    </div>
+    <div id="ledgerSummary" class="kv" style="display:none"></div>
+  </div>
+  <div class="card">
+    <h2>Recent Ledger Entries</h2>
+    <table>
+      <thead><tr><th>Type</th><th>Amount</th><th>Provider</th><th>Campaign</th><th>Notes</th><th>Date</th></tr></thead>
+      <tbody id="ledgerEntries"><tr><td colspan="6" style="color:var(--muted)">Click Load Summary above.</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ACTUALS -->
+<div id="tab-actuals" class="section">
+  <div class="card">
+    <h2>Import Actual Cost</h2>
+    <div class="grid2">
+      <div>
+        <div class="field">
+          <label>Provider</label>
+          <select id="actualProvider">
+            <option value="openai">openai</option>
+            <option value="runway">runway</option>
+            <option value="fal">fal</option>
+            <option value="replicate">replicate</option>
+            <option value="piapi">piapi</option>
+          </select>
+        </div>
+        <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="field"><label>Actual Amount ($)</label><input type="number" id="actualAmount" placeholder="e.g. 12.50" step="0.01"/></div>
+          <div class="field"><label>Estimate ID (optional)</label><input type="text" id="actualEstimateId" placeholder="link to estimate"/></div>
+        </div>
+        <div class="field"><label>Notes</label><input type="text" id="actualNotes" placeholder="e.g. Invoice #123"/></div>
+        <button class="btn primary" onclick="importActual()">Import</button>
+        <div id="actualMsg"></div>
+      </div>
+      <div>
+        <button class="btn" onclick="loadVariances()" style="margin-bottom:12px">Load Variance Report</button>
+        <div id="varianceReport" class="kv" style="display:none;max-height:260px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Unmapped Actuals</h2>
+    <button class="btn" onclick="loadUnmapped()" style="margin-bottom:12px">Load Unmapped</button>
+    <table>
+      <thead><tr><th>Provider</th><th>Amount</th><th>Source</th><th>Date</th></tr></thead>
+      <tbody id="unmappedBody"><tr><td colspan="4" style="color:var(--muted)">Click Load Unmapped.</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="tab-analytics" class="section">
+  <div class="card">
+    <h2>Summary</h2>
+    <div id="analyticsSummary" class="kv">Loading...</div>
+  </div>
+  <div class="card">
+    <h2>Events</h2>
+    <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <select id="eventFilter" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
+        <option value="">All events</option>
+        <option value="economics.v2.estimate.created">estimate.created</option>
+        <option value="economics.v2.budget.blocked">budget.blocked</option>
+        <option value="economics.v2.budget.reserved">budget.reserved</option>
+        <option value="economics.v2.batch.savings_recommended">batch.savings</option>
+        <option value="economics.v2.decision.overridden">decision.overridden</option>
+        <option value="economics.v2.actual.imported">actual.imported</option>
+        <option value="economics.v2.variance.detected">variance.detected</option>
+        <option value="economics.v2.config.profile.activated">config.activated</option>
+      </select>
+      <button class="btn" onclick="loadEvents()">Refresh</button>
+    </div>
+    <div id="eventsList">Loading...</div>
+  </div>
+</div>
+
+<!-- FORECAST -->
+<div id="tab-forecast" class="section">
+  <div class="card" style="max-width:520px">
+    <h2>Spend Forecast</h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+      <input id="forecastWs" placeholder="workspace_id (optional)" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;flex:1;min-width:160px"/>
+      <input id="forecastDays" type="number" value="30" min="1" placeholder="days ahead" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;width:100px"/>
+      <input id="forecastBudget" type="number" placeholder="monthly budget $" step="0.01" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;width:150px"/>
+    </div>
+    <button class="btn primary" onclick="runForecast()">Run Forecast</button>
+    <div id="forecastResult" class="kv" style="display:none;margin-top:12px"></div>
+  </div>
+
+  <div class="card">
+    <h2>Active Alerts</h2>
+    <button class="btn" onclick="loadAlerts()" style="margin-bottom:12px">Load Alerts</button>
+    <div id="alertsList"><div style="color:var(--muted);font-size:13px">Click Load Alerts.</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Anomaly Detection</h2>
+    <button class="btn primary" onclick="runAnomalies()">Run Detection</button>
+    <div id="anomalyResult" style="margin-top:12px;font-size:13px;color:var(--muted)"></div>
+  </div>
+</div>
+
+<script>
+const V2  = "http://localhost:8000/api/economics/v2";
+const V1A = "http://localhost:8000/api/video-economics/admin";
+
+async function get(url) {
+  try { const r = await fetch(url); return await r.json(); } catch { return null; }
+}
+async function post(url, body) {
+  try { const r = await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); return await r.json(); } catch { return null; }
+}
+async function patch(url, body) {
+  try { const r = await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); return await r.json(); } catch { return null; }
+}
+
+function switchTab(name) {
+  const names = ["providers","thresholds","ledger","actuals","analytics","forecast"];
+  document.querySelectorAll(".tab").forEach((t,i) => t.classList.toggle("active", names[i] === name));
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(`tab-${name}`).classList.add("active");
+  if (name === "providers")  loadProviders();
+  if (name === "thresholds") loadThresholds();
+  if (name === "analytics")  { loadAnalyticsSummary(); loadEvents(); }
+}
+
+async function loadProviders() {
+  const data = await get(`${V2}/providers/pricing/active`);
+  if (!data) {
+    document.getElementById("providerBody").innerHTML = '<tr><td colspan="6" style="color:var(--red)">Cannot connect to API. Is the server running?</td></tr>';
+    return;
+  }
+  document.getElementById("providerBody").innerHTML = data.providers.map(p => `
+    <tr>
+      <td><strong>${p.provider_key}</strong></td>
+      <td style="color:var(--muted)">${p.model_key || "default"}</td>
+      <td>v${p.profile_version}</td>
+      <td><span class="badge active-b">${p.approval_status}</span></td>
+      <td style="color:var(--muted)">${p.source_type || "manual"}</td>
+      <td>
+        <button class="btn" onclick="previewImpact('${p.provider_key}')">Impact Preview</button>
+      </td>
+    </tr>`).join("");
+}
+
+async function previewImpact(pk) {
+  const v = document.getElementById("approveVersion").value;
+  if (!v) { alert("Enter a version number first."); return; }
+  const data = await get(`${V2}/providers/${pk}/pricing/impact/${v}`);
+  const el = document.getElementById("impactPreview");
+  if (data) { el.style.display="block"; el.innerHTML = `<div class="kv">${JSON.stringify(data, null, 2)}</div>`; }
+}
+
+async function stageProfile() {
+  const pk  = document.getElementById("stageProvider").value;
+  const raw = document.getElementById("stageJson").value;
+  const msg = document.getElementById("stageMsg");
+  if (!pk) { msg.className="msg err"; msg.textContent="Select a provider."; return; }
+  let json; try { json = JSON.parse(raw); } catch { msg.className="msg err"; msg.textContent="Invalid JSON."; return; }
+  const result = await post(`${V2}/providers/${pk}/pricing/stage`, {profile_data:{...json,provider_key:pk}, created_by:"admin"});
+  if (result && result.staged_version) {
+    msg.className="msg ok"; msg.textContent=`Staged v${result.staged_version}. Validate then approve to activate.`;
+    loadProviders();
+  } else { msg.className="msg err"; msg.textContent = result?.detail || "Stage failed."; }
+}
+
+async function validateProfile() {
+  const pk  = document.getElementById("stageProvider").value;
+  const raw = document.getElementById("stageJson").value;
+  const msg = document.getElementById("stageMsg");
+  if (!pk) { msg.className="msg err"; msg.textContent="Select a provider."; return; }
+  let json; try { json = JSON.parse(raw); } catch { msg.className="msg err"; msg.textContent="Invalid JSON."; return; }
+  const result = await post(`${V2}/providers/${pk}/pricing/validate`, {provider_key:pk, draft_profile:{...json,provider_key:pk}});
+  if (result) {
+    msg.className = result.valid ? "msg ok" : "msg err";
+    msg.textContent = result.valid ? "Valid. Ready to approve." : "Errors: " + (result.errors||[]).join(", ");
+  }
+}
+
+async function approveProfile() {
+  const pk  = document.getElementById("stageProvider").value;
+  const v   = document.getElementById("approveVersion").value;
+  const msg = document.getElementById("approveMsg");
+  if (!pk || !v) { msg.className="msg err"; msg.textContent="Select provider and enter version."; return; }
+  const result = await post(`${V2}/providers/${pk}/pricing/approve?version=${v}&approved_by=admin`, {});
+  if (result && result.activated_version) {
+    msg.className="msg ok"; msg.textContent=`v${result.activated_version} activated.`;
+    loadProviders();
+  } else { msg.className="msg err"; msg.textContent = result?.detail || "Approval failed."; }
+}
+
+async function rollbackProfile() {
+  const pk  = document.getElementById("stageProvider").value;
+  const msg = document.getElementById("stageMsg");
+  if (!pk) { msg.className="msg err"; msg.textContent="Select a provider."; return; }
+  const result = await post(`${V2}/providers/${pk}/pricing/rollback`, {});
+  if (result && result.rolled_back_to) {
+    msg.className="msg ok"; msg.textContent=`Rolled back to v${result.rolled_back_to}.`;
+    loadProviders();
+  } else { msg.className="msg err"; msg.textContent = result?.detail || "Rollback failed."; }
+}
+
+async function loadThresholds() {
+  const data = await get(`${V1A}/thresholds`);
+  if (data) {
+    document.getElementById("nearBudget").value   = data.near_budget_threshold;
+    document.getElementById("asyncSavings").value = data.async_savings_threshold;
+  }
+}
+
+async function saveThresholds() {
+  const msg = document.getElementById("thresholdMsg");
+  const payload = {
+    near_budget_threshold:   parseFloat(document.getElementById("nearBudget").value),
+    async_savings_threshold: parseFloat(document.getElementById("asyncSavings").value),
+  };
+  const result = await patch(`${V1A}/thresholds`, payload);
+  if (result) { msg.className="msg ok"; msg.textContent="Thresholds saved."; }
+  else { msg.className="msg err"; msg.textContent="Save failed."; }
+}
+
+async function loadLedger() {
+  const ws = document.getElementById("ledgerWs").value;
+  const url = ws ? `${V2}/ledger/summary?workspace_id=${ws}` : `${V2}/ledger/summary`;
+  const summary = await get(url);
+  const entryUrl = ws ? `${V2}/ledger/entries?workspace_id=${ws}&limit=20` : `${V2}/ledger/entries?limit=20`;
+  const entries = await get(entryUrl);
+
+  const el = document.getElementById("ledgerSummary");
+  if (summary) { el.style.display="block"; el.textContent=JSON.stringify(summary, null, 2); }
+
+  if (entries) {
+    document.getElementById("ledgerEntries").innerHTML = (entries.entries||[]).map(e => `
+      <tr>
+        <td>${e.entry_type}</td>
+        <td>$${parseFloat(e.amount).toFixed(4)}</td>
+        <td>${e.provider_key||"-"}</td>
+        <td>${e.campaign_id||"-"}</td>
+        <td style="color:var(--muted)">${e.notes||""}</td>
+        <td style="color:var(--muted)">${e.created_at?.slice(0,19)}</td>
+      </tr>`).join("") || '<tr><td colspan="6" style="color:var(--muted)">No entries.</td></tr>';
+  }
+}
+
+async function importActual() {
+  const msg = document.getElementById("actualMsg");
+  const amt = document.getElementById("actualAmount").value;
+  if (!amt) { msg.className="msg err"; msg.textContent="Enter actual amount."; return; }
+  const payload = {
+    provider_key:  document.getElementById("actualProvider").value,
+    actual_amount: parseFloat(amt),
+    currency:      "USD",
+    import_source: "manual",
+    notes:         document.getElementById("actualNotes").value || null,
+    estimate_id:   document.getElementById("actualEstimateId").value || null,
+  };
+  const result = await post(`${V2}/actuals/import`, payload);
+  if (result && result.actual_cost_id) {
+    msg.className="msg ok";
+    msg.textContent=`Imported. Map status: ${result.map_status}.`;
+  } else { msg.className="msg err"; msg.textContent="Import failed."; }
+}
+
+async function loadVariances() {
+  const data = await get(`${V2}/actuals/variance`);
+  const el = document.getElementById("varianceReport");
+  if (data) { el.style.display="block"; el.textContent=JSON.stringify(data, null, 2); }
+}
+
+async function loadUnmapped() {
+  const data = await get(`${V2}/actuals/unmapped`);
+  if (data) {
+    document.getElementById("unmappedBody").innerHTML = (data.unmapped||[]).map(r => `
+      <tr>
+        <td>${r.provider_key}</td>
+        <td>$${parseFloat(r.actual_amount).toFixed(4)}</td>
+        <td>${r.import_source}</td>
+        <td style="color:var(--muted)">${r.created_at?.slice(0,19)}</td>
+      </tr>`).join("") || '<tr><td colspan="4" style="color:var(--muted)">No unmapped actuals.</td></tr>';
+  }
+}
+
+async function loadAnalyticsSummary() {
+  const data = await get(`${V2}/analytics/summary`);
+  if (data) document.getElementById("analyticsSummary").textContent = JSON.stringify(data, null, 2);
+}
+
+async function loadEvents() {
+  const filter = document.getElementById("eventFilter")?.value;
+  const url = filter ? `${V2}/analytics/events?event_type=${encodeURIComponent(filter)}&limit=30` : `${V2}/analytics/events?limit=30`;
+  const data = await get(url);
+  const el = document.getElementById("eventsList");
+  if (!data || !data.events || data.events.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px">No events yet. Run an estimate first.</div>';
+    return;
+  }
+  el.innerHTML = data.events.map(e => `
+    <div class="event-row">
+      <div class="event-type">${e.event_type}</div>
+      <div style="color:var(--muted);min-width:160px">${e.created_at?.slice(0,19)}</div>
+      <div style="font-family:monospace;font-size:11px;color:var(--muted)">${JSON.stringify(e.properties||{}).slice(0,140)}</div>
+    </div>`).join("");
+}
+
+async function runForecast() {
+  const ws     = document.getElementById("forecastWs").value;
+  const days   = document.getElementById("forecastDays").value || 30;
+  const budget = document.getElementById("forecastBudget").value;
+  let url = `${V2}/analytics/forecast?days_ahead=${days}`;
+  if (ws)     url += `&workspace_id=${ws}`;
+  if (budget) url += `&monthly_budget=${budget}`;
+  const data = await get(url);
+  const el = document.getElementById("forecastResult");
+  if (data) { el.style.display="block"; el.textContent=JSON.stringify(data, null, 2); }
+}
+
+async function loadAlerts() {
+  const data = await get(`${V2}/analytics/alerts`);
+  const el = document.getElementById("alertsList");
+  if (!data || !data.alerts || data.alerts.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px">No active alerts.</div>';
+    return;
+  }
+  el.innerHTML = data.alerts.map(a => `
+    <div class="alert-card">
+      <div class="alert-title">
+        ${a.title}
+        <span class="badge sev-${a.severity}" style="margin-left:6px">${a.severity}</span>
+      </div>
+      <div class="alert-desc">${a.description || ""}</div>
+    </div>`).join("");
+}
+
+async function runAnomalies() {
+  const data = await get(`${V2}/analytics/anomalies`);
+  const el = document.getElementById("anomalyResult");
+  if (!data || !data.anomalies || data.anomalies.length === 0) {
+    el.textContent = "No anomalies detected.";
+  } else {
+    el.innerHTML = data.anomalies.map(a => `
+      <div style="padding:6px 0;border-bottom:1px solid var(--border)">
+        <strong>${a.provider_key}</strong> — variance ${a.variance_percent?.toFixed(1)}%
+        <span class="badge sev-${a.severity}" style="margin-left:4px">${a.severity}</span>
+      </div>`).join("");
+  }
+}
+
+// Load on start
+loadProviders();
+</script>
+</body>
+</html>

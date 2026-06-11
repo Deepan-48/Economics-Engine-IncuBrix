@@ -1,0 +1,142 @@
+[
+  {
+    "provider_key": "openai",
+    "model_key": "default",
+    "profile_version": 1,
+    "environment": "production",
+    "source_type": "manual",
+    "approval_status": "active",
+    "currency": "USD",
+    "supports_batch_discount": true,
+    "batch_discount_percent": 50,
+    "default_uncertainty_multiplier_low": 0.9,
+    "default_uncertainty_multiplier_high": 1.2,
+    "base_assumptions": {
+      "short_seconds": 8,
+      "medium_seconds": 20,
+      "long_seconds": 45
+    },
+    "rate_cards": [
+      { "model_key": "default", "unit_type": "per_second", "unit_rate": 0.030, "quality_class": "high", "currency": "USD" },
+      { "model_key": "default", "unit_type": "per_second", "unit_rate": 0.024, "quality_class": "acceptable", "currency": "USD" },
+      { "model_key": "default", "unit_type": "per_second", "unit_rate": 0.041, "quality_class": "premium", "currency": "USD" }
+    ],
+    "modifiers": [
+      { "modifier_type": "batch_discount", "value_type": "percent", "value": 50, "condition": "execution_mode=batch" },
+      { "modifier_type": "quality_multiplier", "value_type": "multiplier", "value": 1.0, "condition": null }
+    ]
+  },
+  {
+    "provider_key": "runway",
+    "model_key": "gen3",
+    "profile_version": 1,
+    "environment": "production",
+    "source_type": "manual",
+    "approval_status": "active",
+    "currency": "USD",
+    "supports_batch_discount": false,
+    "batch_discount_percent": 0,
+    "credit_price_usd": 0.01,
+    "default_uncertainty_multiplier_low": 0.9,
+    "default_uncertainty_multiplier_high": 1.3,
+    "base_assumptions": {
+      "short_credits": 50,
+      "medium_credits": 120,
+      "long_credits": 250
+    },
+    "rate_cards": [
+      { "model_key": "gen3", "unit_type": "credits", "unit_rate": 0.01, "quality_class": "high", "currency": "USD" },
+      { "model_key": "gen3", "unit_type": "credits", "unit_rate": 0.0085, "quality_class": "acceptable", "currency": "USD" },
+      { "model_key": "gen3", "unit_type": "credits", "unit_rate": 0.014, "quality_class": "premium", "currency": "USD" }
+    ],
+    "modifiers": [
+      { "modifier_type": "quality_multiplier", "value_type": "multiplier", "value": 1.0, "condition": null }
+    ]
+  },
+  {
+    "provider_key": "fal",
+    "model_key": "default",
+    "profile_version": 1,
+    "environment": "production",
+    "source_type": "manual",
+    "approval_status": "active",
+    "currency": "USD",
+    "supports_batch_discount": false,
+    "batch_discount_percent": 0,
+    "default_uncertainty_multiplier_low": 0.85,
+    "default_uncertainty_multiplier_high": 1.25,
+    "base_assumptions": {
+      "short_multiplier": 1.0,
+      "medium_multiplier": 2.2,
+      "long_multiplier": 4.5
+    },
+    "rate_cards": [
+      { "model_key": "default", "unit_type": "per_output", "unit_rate": 0.080, "quality_class": "high", "currency": "USD" },
+      { "model_key": "default", "unit_type": "per_output", "unit_rate": 0.045, "quality_class": "acceptable", "currency": "USD" },
+      { "model_key": "default", "unit_type": "per_output", "unit_rate": 0.150, "quality_class": "premium", "currency": "USD" }
+    ],
+    "modifiers": []
+  },
+  {
+    "provider_key": "replicate",
+    "model_key": "default",
+    "profile_version": 1,
+    "environment": "production",
+    "source_type": "manual",
+    "approval_status": "active",
+    "currency": "USD",
+    "supports_batch_discount": false,
+    "batch_discount_percent": 0,
+    "default_uncertainty_multiplier_low": 0.8,
+    "default_uncertainty_multiplier_high": 1.4,
+    "base_assumptions": {
+      "short_seconds": 12,
+      "medium_seconds": 30,
+      "long_seconds": 70,
+      "duration_class_hardware": {
+        "short": "standard",
+        "medium": "gpu_large",
+        "long": "gpu_xl"
+      },
+      "hardware_profiles": {
+        "standard":  { "rate_per_second": 0.0014 },
+        "gpu_large": { "rate_per_second": 0.0055 },
+        "gpu_xl":    { "rate_per_second": 0.0115 }
+      }
+    },
+    "rate_cards": [
+      { "model_key": "default", "unit_type": "per_runtime_second", "unit_rate": 0.0014, "quality_class": "acceptable", "currency": "USD" },
+      { "model_key": "default", "unit_type": "per_runtime_second", "unit_rate": 0.0055, "quality_class": "high", "currency": "USD" },
+      { "model_key": "default", "unit_type": "per_runtime_second", "unit_rate": 0.0115, "quality_class": "premium", "currency": "USD" }
+    ],
+    "modifiers": []
+  },
+  {
+    "provider_key": "piapi",
+    "model_key": "default",
+    "profile_version": 1,
+    "environment": "production",
+    "source_type": "manual",
+    "approval_status": "active",
+    "currency": "USD",
+    "supports_batch_discount": false,
+    "batch_discount_percent": 0,
+    "credit_price_usd": 0.008,
+    "account_mode": "pay_as_you_go",
+    "default_uncertainty_multiplier_low": 0.88,
+    "default_uncertainty_multiplier_high": 1.28,
+    "base_assumptions": {
+      "short_credits": 40,
+      "medium_credits": 95,
+      "long_credits": 200
+    },
+    "rate_cards": [
+      { "model_key": "default", "unit_type": "credits", "unit_rate": 0.008, "quality_class": "high", "currency": "USD" },
+      { "model_key": "default", "unit_type": "credits", "unit_rate": 0.0072, "quality_class": "acceptable", "currency": "USD" },
+      { "model_key": "default", "unit_type": "credits", "unit_rate": 0.0104, "quality_class": "premium", "currency": "USD" }
+    ],
+    "modifiers": [
+      { "modifier_type": "account_mode_multiplier", "value_type": "multiplier", "value": 0.65, "condition": "account_mode=host_your_account" }
+    ]
+  }
+]
