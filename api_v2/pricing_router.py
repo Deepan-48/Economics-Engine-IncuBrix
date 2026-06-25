@@ -1,5 +1,5 @@
 """
-api_v2/pricing_router.py
+api_v2/pricing_router.py - Pricing for 5 models
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session

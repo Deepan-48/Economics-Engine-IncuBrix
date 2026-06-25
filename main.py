@@ -6,7 +6,7 @@ from db.database import init_db
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="IncuBrix Economics Engine v2 - commercial intelligence layer for video generation cost management.",
+    description="IncuBrix Economics Engine v2 - intelligence layer for video generation cost management.",
     docs_url="/docs",
     redoc_url="/redoc",
 )

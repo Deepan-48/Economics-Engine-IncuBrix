@@ -1,4 +1,4 @@
--- Economics Engine v2 — Reference SQL Schema
+-- Economics Engine v2 - Reference SQL Schema
 -- SQLAlchemy creates these automatically on startup via init_db()
 -- This file is for reference only (PostgreSQL production use)
 
