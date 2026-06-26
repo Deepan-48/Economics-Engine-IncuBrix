@@ -1,6 +1,6 @@
 """
 tests_v2/test_v2_sprint1.py
-Run: pytest tests_v2/test_v2_sprint1.py -v
+Run:pytest tests_v2/test_v2_sprint1.py -v
 """
 import sys, os, pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))

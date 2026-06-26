@@ -16,7 +16,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
 
 @app.on_event("startup")
 def on_startup():
-    print(f"=== {settings.app_name} starting ===")
+    print(f"== {settings.app_name} starting ==")
     init_db()
     print("DB ready.")
 
