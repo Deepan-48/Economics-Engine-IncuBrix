@@ -1,6 +1,6 @@
 # IncuBrix Economics Engine v2
 
-Enhancement of v1 — production-grade commercial intelligence layer for video generation cost management.
+Enhancement of v1 - production-grade commercial intelligence layer for video generation cost management.
 
 Builds on v1 (Sprint 1 + Sprint 2) and adds:
 - Multi-component cost normalization with modifier chains
